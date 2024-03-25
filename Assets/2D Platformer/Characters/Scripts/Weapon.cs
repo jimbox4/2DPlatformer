@@ -4,7 +4,5 @@ using UnityEngine;
 [Serializable]
 public class Weapon
 {
-    [SerializeField] private int _damage;
-
-    public int Damage => _damage;
+    [field:SerializeField] public int Damage { get; private set; }
 }

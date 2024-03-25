@@ -4,11 +4,14 @@ using UnityEngine;
 public class Chest : MonoBehaviour, IInteractable
 {
     [SerializeField] private ChestAnimator _animator;
+    [SerializeField] private Collider2D _collider;
+
     [Header("Coins")]
     [SerializeField] private Coin _coinPrefab;
     [SerializeField] private int _coinsCount;
     [SerializeField] private Transform _coinSpawnPoint;
     [SerializeField] private float _coinSpawnDelay;
+
     [Header("Interact key")]
     [SerializeField] private KeyVisability _key;
 
@@ -21,6 +24,7 @@ public class Chest : MonoBehaviour, IInteractable
             _key.Disable();
             _isOpen = true;
             _animator.Open(_isOpen);
+            _collider.enabled = false;
 
             StartCoroutine(ThrowCoins(_coinSpawnDelay));
         }

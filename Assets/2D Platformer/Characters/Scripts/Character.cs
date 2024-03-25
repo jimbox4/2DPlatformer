@@ -9,14 +9,14 @@ public abstract class Character : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private Health _health;
 
-    protected bool IsDead;
     protected string Name;
 
     public event Action HealthDecreased;
 
+    protected bool IsDead => _health.CurrentValue == 0;
+
     public virtual void Initialize()
     {
-        IsDead = false;
         Name = gameObject.name;
     }
 
@@ -40,13 +40,11 @@ public abstract class Character : MonoBehaviour
 
         if (_health.CurrentValue == 0)
         {
-            IsDead = true;
-
             Debug.Log($"{Name} is dead");
         }
     }
 
-    protected virtual void DestroyMe()
+    protected void DestroyThisObject()
     {
         int miliseconds = (int)_detroyDelay * 1000;
         Task.Delay(miliseconds);

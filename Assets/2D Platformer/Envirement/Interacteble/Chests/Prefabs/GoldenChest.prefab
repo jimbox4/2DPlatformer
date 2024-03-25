@@ -342,7 +342,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 6011020363371000251}
-  _prefab: {fileID: 4122799557839344280, guid: 52f3f0b304b3d6b458bd1a7d4234a4af, type: 3}
+  _collider: {fileID: 2231830611772874881}
+  _coinPrefab: {fileID: 4122799557839344280, guid: 52f3f0b304b3d6b458bd1a7d4234a4af, type: 3}
   _coinsCount: 25
   _coinSpawnPoint: {fileID: 472029619005071048}
   _coinSpawnDelay: 0.1

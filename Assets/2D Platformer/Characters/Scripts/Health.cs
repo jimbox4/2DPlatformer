@@ -16,9 +16,7 @@ public class Health
             return false;
         }
 
-        _currentValue += value;
-
-        Clamp();
+        _currentValue = Mathf.Clamp(_currentValue + value, 0, _maxValue);
 
         return true;
     }
@@ -30,22 +28,8 @@ public class Health
             return false;
         }
 
-        _currentValue -= value;
-
-        Clamp();
+        _currentValue = Mathf.Clamp(_currentValue - value, 0, _maxValue);
 
         return true;
-    }
-
-    private void Clamp()
-    {
-        if (_currentValue < 0)
-        {
-            _currentValue = 0;
-        }
-        else if (_currentValue > _maxValue)
-        {
-            _currentValue = _maxValue;
-        }
     }
 }

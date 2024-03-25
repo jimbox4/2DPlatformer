@@ -17,6 +17,11 @@ public class DeathBringer : Character
     private void Update()
     {
         _mover.Move();
-        _animator.MoveHorizontal(_mover.DirectionX);
+        _animator.MoveHorizontal(_mover.MoveDirectionX);
+    }
+
+    private void OnDrawGizmos()
+    {
+        _mover.DrawGizmos();
     }
 }

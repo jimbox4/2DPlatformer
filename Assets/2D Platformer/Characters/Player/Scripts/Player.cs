@@ -33,8 +33,6 @@ public class Player : Character
         _input.Player.Interact.performed += interactingAction => _interactionSystem.Interact();
         _input.Player.Attack.performed += attackAction => StartAnimatorAttackState();
         _input.Player.Jump.performed += jumpAction => _mover.Jump();
-
-        
     }
 
     private void OnEnable()
@@ -57,7 +55,8 @@ public class Player : Character
         {
             _mover.StopHorizontalVelocity();
             _animator.Death(IsDead);
-            DestroyMe();
+            DestroyThisObject();
+
             return;
         }
 

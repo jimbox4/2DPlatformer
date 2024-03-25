@@ -14,8 +14,8 @@ public class DeathBringerMover
     private List<Vector2> _cachedPatrollPoints = new List<Vector2>();
     private int _patrolPointIndex = 0;
     private Transform _transform;
-
-    public int DirectionX { get; private set; } = 0;
+    
+    public int MoveDirectionX { get; private set; } = 0;
 
     public void Initialize(Transform transform)
     {
@@ -49,18 +49,18 @@ public class DeathBringerMover
     {
         if (targetX - _transform.position.x > 0.1f)
         {
-            DirectionX = 1;
+            MoveDirectionX = 1;
         }
         else if (targetX - _transform.position.x < -0.1f)
         {
-            DirectionX = -1;
+            MoveDirectionX = -1;
         }
         else
         {
             return false;
         }
 
-        MoveHorizontal(DirectionX);
+        MoveHorizontal(MoveDirectionX);
 
         return true;
     }
@@ -81,6 +81,16 @@ public class DeathBringerMover
         else if (direction > 0)
         {
             transform.rotation = new Quaternion(0, 0, 0, 0);
+        }
+    }
+
+    public void DrawGizmos()
+    {
+        Gizmos.color = Color.white;
+
+        foreach (Vector2 patrolPoint in _cachedPatrollPoints)
+        {
+            Gizmos.DrawWireSphere(patrolPoint, 0.2f);
         }
     }
 }

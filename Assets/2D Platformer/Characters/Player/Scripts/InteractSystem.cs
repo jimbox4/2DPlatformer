@@ -55,7 +55,7 @@ public class InteractSystem
             }
         }
 
-        if (nearest.TryGetComponent(out Chest interacteble))
+        if (nearest.TryGetComponent(out IInteractable interacteble))
         {
             interacteble.Interact();
         }
