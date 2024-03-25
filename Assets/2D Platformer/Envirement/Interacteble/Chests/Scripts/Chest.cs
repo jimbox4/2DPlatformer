@@ -5,7 +5,7 @@ public class Chest : MonoBehaviour, IInteractable
 {
     [SerializeField] private ChestAnimator _animator;
     [Header("Coins")]
-    [SerializeField] private Coin _prefab;
+    [SerializeField] private Coin _coinPrefab;
     [SerializeField] private int _coinsCount;
     [SerializeField] private Transform _coinSpawnPoint;
     [SerializeField] private float _coinSpawnDelay;
@@ -42,7 +42,7 @@ public class Chest : MonoBehaviour, IInteractable
 
         for (int i = _coinsCount; i > 0; i--)
         {
-            Instantiate(_prefab, _coinSpawnPoint.transform);
+            Instantiate(_coinPrefab, _coinSpawnPoint.transform);
 
             yield return wait;
         }

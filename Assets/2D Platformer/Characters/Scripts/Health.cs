@@ -18,10 +18,7 @@ public class Health
 
         _currentValue += value;
 
-        if (_currentValue > _maxValue)
-        {
-            _currentValue = _maxValue;
-        }
+        Clamp();
 
         return true;
     }
@@ -35,11 +32,20 @@ public class Health
 
         _currentValue -= value;
 
+        Clamp();
+
+        return true;
+    }
+
+    private void Clamp()
+    {
         if (_currentValue < 0)
         {
             _currentValue = 0;
         }
-
-        return true;
+        else if (_currentValue > _maxValue)
+        {
+            _currentValue = _maxValue;
+        }
     }
 }
