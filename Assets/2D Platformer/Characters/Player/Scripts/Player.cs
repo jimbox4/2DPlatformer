@@ -20,7 +20,7 @@ public class Player : Character
     [SerializeField] private PlayerAnimatorEvents _animatorEvents;
 
     private UserInput _input;
-    private float _attackTime = 0;
+    private float _attackTime;
 
     public override void Initialize()
     {
@@ -33,6 +33,8 @@ public class Player : Character
         _input.Player.Interact.performed += interactingAction => _interactionSystem.Interact();
         _input.Player.Attack.performed += attackAction => StartAnimatorAttackState();
         _input.Player.Jump.performed += jumpAction => _mover.Jump();
+
+        _attackTime = 0 - _combat.AttackDelay;
     }
 
     private void OnEnable()
@@ -53,7 +55,7 @@ public class Player : Character
     {
         if (IsDead)
         {
-            _mover.StopHorizontalVelocity();
+            _mover.StopVelocityX();
             _animator.Death(IsDead);
             DestroyThisObject();
 
@@ -73,6 +75,14 @@ public class Player : Character
         if (collision.gameObject.TryGetComponent(out Coin coin))
         {
             _bag.IncreaseCoins(coin.Collect());
+        }
+
+        if (collision.gameObject.TryGetComponent(out Heart heart))
+        {
+            if (HasMaxHealth == false)
+            {
+                Heal(heart.Collect());
+            }
         }
     }
 

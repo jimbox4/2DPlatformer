@@ -43,7 +43,7 @@ public class PlayerMover
         return boxcast.collider != null;
     }
 
-    public void StopHorizontalVelocity()
+    public void StopVelocityX()
     {
         _rigidbody.velocity = Vector2.zero;
     }

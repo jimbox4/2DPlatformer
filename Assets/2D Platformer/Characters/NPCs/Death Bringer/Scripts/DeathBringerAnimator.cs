@@ -10,9 +10,14 @@ public class DeathBringerAnimator : MonoBehaviour
 
     [SerializeField] private Animator _animator;
 
-    public bool CkeckCurrentClip(string name)
+    public bool IsAttackClip()
     {
-        return _animator.GetCurrentAnimatorStateInfo(0).IsName(name);
+        return _animator.GetCurrentAnimatorStateInfo(0).IsName(Attack);
+    }
+
+    public bool IsCastClip()
+    {
+        return _animator.GetCurrentAnimatorStateInfo(0).IsName(Cast);
     }
 
     public void MoveHorizontal(int direction)

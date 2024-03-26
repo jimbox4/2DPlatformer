@@ -1,0 +1,118 @@
+using System;
+using UnityEngine;
+using UnityEngine.Pool;
+
+[Serializable]
+public class DeathBringerCombat
+{
+    [Header("Melee attack")]
+    [SerializeField, Min(0)] private float _meleeAttackDelay;
+    [SerializeField] private Transform _meleeAttackPoint;
+    [SerializeField, Min(0)] private float _meleeAttackDistance;
+    [SerializeField, Min(0)] private float _attackRadius;
+
+    [Header("Spell attack")]
+    [SerializeField, Min(0)] private float _castDelay;
+    [SerializeField] Transform _castPoint;
+    [SerializeField, Min(0)] private float _castRadius;
+    [SerializeField] private DeathBringerSpell _spellPrefab;
+
+    private ObjectPool<DeathBringerSpell> _pool;
+    private Transform _target = null;
+    private LayerMask _targetLayerMask;
+    private int _damage;
+    private float _castTime;
+    private float _attackTime;
+
+    public void Initialize(int damage, LayerMask enemyLayerMask)
+    {
+        _castTime = 0 - _castDelay;
+        _attackTime = 0 - _meleeAttackDelay;
+
+        _pool = new ObjectPool<DeathBringerSpell>(
+        createFunc: () =>
+        {
+            var spell = GameObject.Instantiate(_spellPrefab);
+            var returToPool = spell.GetComponent<SpellReturnToPool>();
+            returToPool.Initialize(_pool, spell);
+            return spell;
+        },
+        actionOnGet: (spell) => ActionOnGet(spell),
+        actionOnRelease: (spell) => spell.gameObject.SetActive(false),
+        actionOnDestroy: (spell) => GameObject.Destroy(spell),
+        defaultCapacity: 2
+        );
+
+        _targetLayerMask = enemyLayerMask;
+        _damage = damage;
+    }
+
+    public void SetTarget(Transform target)
+    {
+        _target = target;
+    }
+
+    private void ActionOnGet(DeathBringerSpell spell)
+    {
+        spell.transform.position = _target.position;
+        spell.gameObject.SetActive(true);
+    }
+
+    public bool CanAttackMele()
+    {
+        if (Time.time - _attackTime < _meleeAttackDelay || _target == null)
+        {
+            return false;
+        }
+
+        _attackTime = Time.time;
+
+        RaycastHit2D hit = Physics2D.Raycast(_meleeAttackPoint.position, _meleeAttackPoint.right, _meleeAttackDistance, _targetLayerMask);
+
+        return hit;
+    }
+
+    public void AttackMelee()
+    {
+        Collider2D collider = Physics2D.OverlapCircle(new Vector2(_meleeAttackPoint.position.x + _meleeAttackPoint.right.x * _meleeAttackDistance * 0.5f, _meleeAttackPoint.position.y), _attackRadius, _targetLayerMask);
+
+        if (collider != null && collider.TryGetComponent(out Player player))
+        {
+            player.TakeDamage(_damage);
+        }
+    }
+
+    public bool CanCastSpell()
+    {
+        if (Time.time - _castTime < _castDelay || _target == null)
+        {
+            return false;
+        }
+
+        _castTime = Time.time;
+
+        if (Vector2.Distance(_target.position, _castPoint.position) < _castRadius)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void CastSpell()
+    {
+        _pool.Get();
+    }
+
+    public void DrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(new Vector2(_meleeAttackPoint.position.x + _meleeAttackPoint.right.x * _meleeAttackDistance * 0.5f, _meleeAttackPoint.position.y), _attackRadius);
+
+        Gizmos.color = Color.black;
+        Gizmos.DrawRay(_meleeAttackPoint.position, _meleeAttackPoint.right * new Vector2(_meleeAttackDistance * 0.5f + _attackRadius, 0));
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(_castPoint.position, _castRadius);
+    }
+}

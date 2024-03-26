@@ -14,13 +14,14 @@ public abstract class Character : MonoBehaviour
     public event Action HealthDecreased;
 
     protected bool IsDead => _health.CurrentValue == 0;
+    protected bool HasMaxHealth => _health.IsMaxValue;
 
     public virtual void Initialize()
     {
         Name = gameObject.name;
     }
 
-    public void TakeHealth(int healthPoints)
+    public void Heal(int healthPoints)
     {
         if (_health.TryIncrease(healthPoints))
         {

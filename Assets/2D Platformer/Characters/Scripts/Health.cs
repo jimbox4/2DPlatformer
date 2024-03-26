@@ -8,6 +8,7 @@ public class Health
     [SerializeField] private int _currentValue;
 
     public int CurrentValue => _currentValue;
+    public bool IsMaxValue => _currentValue == _maxValue;
 
     public bool TryIncrease(int value)
     {
