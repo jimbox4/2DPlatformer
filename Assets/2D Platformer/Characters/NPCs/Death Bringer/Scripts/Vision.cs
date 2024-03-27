@@ -10,7 +10,9 @@ public class Vision
     private Character _target;
     private LayerMask _targetLayerMask;
 
-    public event Action<Character> FoundTarget;
+    public event Action<Character> FindTarget;
+
+    public bool HasTarget => _target != null;
 
     public bool TryFindTarget()
     {
@@ -24,12 +26,18 @@ public class Vision
         if (hit && hit.collider.TryGetComponent(out Character player))
         {
             _target = player;
-            FoundTarget.Invoke(_target);
+            FindTarget.Invoke(_target);
 
             return true;
         }
 
         return false;
+    }
+
+    public void ResetTarget()
+    {
+        _target = null;
+        FindTarget.Invoke(_target);
     }
 
     public void SetTargetLayerMask(LayerMask targetLayerMask)

@@ -6,13 +6,14 @@ using UnityEngine.Pool;
 public class DeathBringerCombat
 {
     [Header("Melee attack")]
+    [SerializeField, Min(0)] private int _meleeAttackDamage;
     [SerializeField, Min(0)] private float _meleeAttackDelay;
     [SerializeField] private Transform _meleeAttackPoint;
     [SerializeField, Min(0)] private float _meleeAttackDistance;
     [SerializeField, Min(0)] private float _attackRadius;
 
     [Header("Spell attack")]
-    //------------- Spell Damage ------------//
+    [SerializeField, Min(0)] private int _spellDamage;
     [SerializeField, Min(0)] private float _castDelay;
     [SerializeField] Transform _castPoint;
     [SerializeField, Min(0)] private float _castRadius;
@@ -21,17 +22,19 @@ public class DeathBringerCombat
     private ObjectPool<DeathBringerSpell> _pool;
     private Character _target = null;
     private LayerMask _targetLayerMask;
-    private int _damage;
     private float _nextCastTime = 0;
     private float _nextAttackTime = 0;
 
-    public void Initialize(int damage, LayerMask enemyLayerMask)
+    public event Action TargetDefiated;
+
+    public void Initialize(LayerMask enemyLayerMask)
     {
         _pool = new ObjectPool<DeathBringerSpell>(
         createFunc: () =>
         {
             var spell = GameObject.Instantiate(_spellPrefab);
             var returToPool = spell.GetComponent<SpellReturnToPool>();
+            spell.Initialize(_spellDamage);
             returToPool.Initialize(_pool, spell);
             return spell;
         },
@@ -42,7 +45,6 @@ public class DeathBringerCombat
         );
 
         _targetLayerMask = enemyLayerMask;
-        _damage = damage;
     }
 
     public void SetTarget(Character target)
@@ -78,7 +80,7 @@ public class DeathBringerCombat
 
         if (collider != null && collider.TryGetComponent(out Player player))
         {
-            player.TakeDamage(_damage);
+            player.TakeDamage(_meleeAttackDamage);
         }
     }
 
@@ -110,7 +112,7 @@ public class DeathBringerCombat
     {
         if (_target != null && _target.IsDead)
         {
-            _target = null;
+            TargetDefiated.Invoke();
         }
     }
 

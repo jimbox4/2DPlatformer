@@ -27,7 +27,7 @@ public class Player : Character
     public override void Initialize()
     {
         base.Initialize();
-        _combat.Initialize(_weapon.Damage);
+        _mover.Initialize();
         _interactionSystem.Initialize(gameObject.transform);
 
         _input = new UserInput();
@@ -57,7 +57,7 @@ public class Player : Character
     {
         if (IsDead)
         {
-            _mover.StopVelocityX();
+            _mover.ResetVelocityX();
             _animator.Death(IsDead);
             DestroyThisObject();
             return;

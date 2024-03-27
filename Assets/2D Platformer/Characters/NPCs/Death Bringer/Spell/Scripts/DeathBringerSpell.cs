@@ -4,8 +4,6 @@ using UnityEngine;
 [RequireComponent(typeof(SpellReturnToPool))]
 public class DeathBringerSpell : MonoBehaviour
 {
-    [Header("Stats")]
-    [SerializeField] private int _damage;
     [Header("Damage zone")]
     [SerializeField] private BoxCollider2D _damageZone;
     [Header("Ground layer")]
@@ -13,6 +11,7 @@ public class DeathBringerSpell : MonoBehaviour
     [Header("Animator script")]
     [SerializeField] private SpellAnimator _animator;
 
+    private int _damage;
     private SpellReturnToPool _spellReturnToPool;
 
     private void Awake()
@@ -34,6 +33,11 @@ public class DeathBringerSpell : MonoBehaviour
         _animator.HandAttack -= StartSpellCoroutine;
         _animator.HandStopAttack -= StopSpellCoroutine;
         _animator.EndAnimation -= Reliaze;
+    }
+
+    public void Initialize(int damage)
+    {
+        _damage = damage;
     }
 
     private void SetStartPosition()

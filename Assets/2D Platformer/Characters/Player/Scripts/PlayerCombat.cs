@@ -4,19 +4,13 @@ using UnityEngine;
 [Serializable]
 public class PlayerCombat
 {
+    [SerializeField] private int _damage;
     [SerializeField] private float _attackDelay;
     [SerializeField] private Transform _attackPoint;
     [SerializeField] private float _attackRadius;
     [SerializeField] private LayerMask _enemyLayer;
 
-    private int _damage;
-
     public float AttackDelay => _attackDelay;
-
-    public void Initialize(int damage)
-    {
-        _damage = damage;
-    }
 
     public void Attack()
     {

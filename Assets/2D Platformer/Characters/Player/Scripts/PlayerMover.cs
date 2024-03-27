@@ -2,10 +2,9 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class PlayerMover
+public class PlayerMover : CharacterMover
 {
-    [SerializeField] private Rigidbody2D _rigidbody;
-    [SerializeField] private float _speed;
+    [SerializeField] private Rigidbody2D _rigidbody2D;
     [SerializeField, Min(0)] private float _jumpForce;
     [Header("Ground check")]
     [SerializeField] private LayerMask _groundLayer;
@@ -16,12 +15,17 @@ public class PlayerMover
 
     public bool IsOnGround { get; private set; }
 
-    public float VelocityY => _rigidbody.velocity.y;
+    public float VelocityY => _rigidbody2D.velocity.y;
+
+    public void Initialize()
+    {
+        Intialize(_rigidbody2D);
+    }
 
     public void Move(float direction, Transform transform)
     {
         Rotate(direction, transform);
-        _rigidbody.velocity = new Vector2(direction * _speed, _rigidbody.velocity.y);
+        MoveHorizontal(direction);
 
         IsOnGround = CheckGround();
     }
@@ -33,7 +37,7 @@ public class PlayerMover
             return;
         }
 
-        _rigidbody.AddForce(Vector2.up * _jumpForce * _jumpForceScale);
+        _rigidbody2D.AddForce(Vector2.up * _jumpForce * _jumpForceScale);
     }
 
     public bool CheckGround()
@@ -41,23 +45,6 @@ public class PlayerMover
         var boxcast = Physics2D.BoxCast(_groundCheckPoint.position, _groundCheckPointSize, 0, Vector2.down, 0, _groundLayer);
 
         return boxcast.collider != null;
-    }
-
-    public void StopVelocityX()
-    {
-        _rigidbody.velocity = Vector2.zero;
-    }
-
-    private void Rotate(float direction, Transform transform)
-    {
-        if (direction < 0)
-        {
-            transform.rotation = new Quaternion(0, 180, 0, 0);
-        }
-        else if (direction > 0)
-        {
-            transform.rotation = new Quaternion(0, 0, 0, 0);
-        }
     }
 
     public void DrawGizmos()

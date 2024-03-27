@@ -9,11 +9,12 @@ public class DeathBringer : Character
     [SerializeField] private Vision _vision;
 
     [Header("Movement")]
-    [SerializeField] private DeathBringerMover _mover;
+    [SerializeField] private Rigidbody2D _rigidbody2d;
+    [SerializeField] private Patrolling _patrollin;
+    [SerializeField] private Pursuit _pursuit;
 
     [Header("Combat")]
     [SerializeField] private DeathBringerCombat _combat;
-    [SerializeField] private Weapon _weapon;
 
     [Header("Animation")]
     [SerializeField] private DeathBringerAnimator _animator;
@@ -22,16 +23,19 @@ public class DeathBringer : Character
     public override void Initialize()
     {
         base.Initialize();
-        _mover.Initialize(transform, _enemyLayerMask);
-        _combat.Initialize(_weapon.Damage, _enemyLayerMask);
+        _pursuit.Initialize(_rigidbody2d, transform);
+        _patrollin.Initialize(_rigidbody2d, transform);
+        _combat.Initialize(_enemyLayerMask);
         _vision.SetTargetLayerMask(_enemyLayerMask);
     }
 
     private void OnEnable()
     {
         Health.OnDecreased += OnHealthDecreased;
-        _vision.FoundTarget += _combat.SetTarget;
-        _vision.FoundTarget += _mover.SetTarget;
+        _combat.TargetDefiated += _vision.ResetTarget;
+
+        _vision.FindTarget += _combat.SetTarget;
+        _vision.FindTarget += _pursuit.SetTarget;
 
         _animatorEvents.AttackFrame += _combat.AttackMelee;
         _animatorEvents.CastFrame += _combat.CastSpell;
@@ -40,8 +44,10 @@ public class DeathBringer : Character
     private void OnDisable()
     {
         Health.OnDecreased -= OnHealthDecreased;
-        _vision.FoundTarget -= _combat.SetTarget;
-        _vision.FoundTarget -= _mover.SetTarget;
+        _combat.TargetDefiated -= _vision.ResetTarget;
+
+        _vision.FindTarget -= _combat.SetTarget;
+        _vision.FindTarget -= _pursuit.SetTarget;
 
         _animatorEvents.AttackFrame -= _combat.AttackMelee;
         _animatorEvents.CastFrame -= _combat.CastSpell;
@@ -51,7 +57,7 @@ public class DeathBringer : Character
     {
         if (IsDead)
         {
-            _mover.StopVelocityX();
+            _pursuit.ResetVelocityX();
             _animator.Death(IsDead);
             DestroyThisObject();
 
@@ -60,7 +66,7 @@ public class DeathBringer : Character
 
         _vision.TryFindTarget();
 
-        if(_combat.CanAttackMelee())
+        if (_combat.CanAttackMelee())
         {
             _animator.AttackMele();
         }
@@ -69,18 +75,32 @@ public class DeathBringer : Character
             _animator.CastSpell();
         }
 
-        _animator.MoveHorizontal(_mover.MoveDirectionX);
+        if (_vision.HasTarget)
+        {
+            _animator.MoveHorizontal(_pursuit.MoveDirectionX);
+        }
+        else
+        {
+            _animator.MoveHorizontal(_patrollin.MoveDirectionX);
+        }
     }
 
     private void FixedUpdate()
     {
         if (_animator.IsAttackClip() == false && _animator.IsCastClip() == false)
         {
-            _mover.Move();
+            if (_vision.HasTarget)
+            {
+                _pursuit.Move();
+            }
+            else
+            {
+                _patrollin.Move();
+            }
         }
         else
         {
-            _mover.StopVelocityX();
+            _pursuit.ResetVelocityX();
         }
     }
 
@@ -91,7 +111,8 @@ public class DeathBringer : Character
 
     private void OnDrawGizmos()
     {
-        _mover.DrawGizmos(transform);
+        _pursuit.DrawGizmos(transform);
+        _patrollin.DrawGizmos();
         _combat.DrawGizmos();
         _vision.DrawGizmos();
     }
