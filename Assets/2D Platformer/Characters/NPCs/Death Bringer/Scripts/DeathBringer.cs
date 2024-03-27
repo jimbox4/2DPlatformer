@@ -87,20 +87,20 @@ public class DeathBringer : Character
 
     private void FixedUpdate()
     {
-        if (_animator.IsAttackClip() == false && _animator.IsCastClip() == false)
+        if (_animator.IsAttackClip() || _animator.IsCastClip())
         {
-            if (_vision.HasTarget)
-            {
-                _pursuit.Move();
-            }
-            else
-            {
-                _patrollin.Move();
-            }
+            _pursuit.ResetVelocityX();
+
+            return;
+        }
+
+        if (_vision.HasTarget)
+        {
+            _pursuit.Move();
         }
         else
         {
-            _pursuit.ResetVelocityX();
+            _patrollin.Move();
         }
     }
 
