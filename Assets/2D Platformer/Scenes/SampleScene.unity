@@ -329,7 +329,7 @@ MonoBehaviour:
     _meleeAttackPoint: {fileID: 1774428484}
     _meleeAttackDistance: 2.6
     _attackRadius: 1.2
-    _spellDamage: 4
+    _spellDamage: 3
     _castDelay: 2
     _castPoint: {fileID: 1811585909}
     _castRadius: 5
