@@ -31,7 +31,7 @@ public class PlayerAnimator : MonoBehaviour
         _animator.SetFloat(VelocityY, velocityY);
     }
 
-    public void AttackEnemy()
+    public void AttackMelee()
     {
         _animator.SetTrigger(Attack);
     }

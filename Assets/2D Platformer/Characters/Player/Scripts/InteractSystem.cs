@@ -14,12 +14,15 @@ public class InteractSystem
         _transform = transform;
     }
 
-    public void ShowInteractKey(Collider2D collision)
+    public bool TryShowInteractKey(Collider2D collision)
     {
         if (collision != null && collision.TryGetComponent(out IInteractable interactable))
         {
             interactable.ShowKey();
+            return true;
         }
+
+        return false;
     }
 
     public void HideInteractKey(Collider2D collision)

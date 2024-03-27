@@ -12,23 +12,21 @@ public class DeathBringerCombat
     [SerializeField, Min(0)] private float _attackRadius;
 
     [Header("Spell attack")]
+    //------------- Spell Damage ------------//
     [SerializeField, Min(0)] private float _castDelay;
     [SerializeField] Transform _castPoint;
     [SerializeField, Min(0)] private float _castRadius;
     [SerializeField] private DeathBringerSpell _spellPrefab;
 
     private ObjectPool<DeathBringerSpell> _pool;
-    private Transform _target = null;
+    private Character _target = null;
     private LayerMask _targetLayerMask;
     private int _damage;
-    private float _castTime;
-    private float _attackTime;
+    private float _nextCastTime = 0;
+    private float _nextAttackTime = 0;
 
     public void Initialize(int damage, LayerMask enemyLayerMask)
     {
-        _castTime = 0 - _castDelay;
-        _attackTime = 0 - _meleeAttackDelay;
-
         _pool = new ObjectPool<DeathBringerSpell>(
         createFunc: () =>
         {
@@ -47,25 +45,27 @@ public class DeathBringerCombat
         _damage = damage;
     }
 
-    public void SetTarget(Transform target)
+    public void SetTarget(Character target)
     {
         _target = target;
     }
 
     private void ActionOnGet(DeathBringerSpell spell)
     {
-        spell.transform.position = _target.position;
+        spell.transform.position = _target.transform.position;
         spell.gameObject.SetActive(true);
     }
 
-    public bool CanAttackMele()
+    public bool CanAttackMelee()
     {
-        if (Time.time - _attackTime < _meleeAttackDelay || _target == null)
+        IsTargetDead();
+
+        if (_nextAttackTime > Time.time || _target == null)
         {
             return false;
         }
 
-        _attackTime = Time.time;
+        _nextAttackTime = Time.time + _meleeAttackDelay;
 
         RaycastHit2D hit = Physics2D.Raycast(_meleeAttackPoint.position, _meleeAttackPoint.right, _meleeAttackDistance, _targetLayerMask);
 
@@ -84,14 +84,16 @@ public class DeathBringerCombat
 
     public bool CanCastSpell()
     {
-        if (Time.time - _castTime < _castDelay || _target == null)
+        IsTargetDead();
+
+        if (_nextCastTime > Time.time || _target == null)
         {
             return false;
         }
 
-        _castTime = Time.time;
+        _nextCastTime = Time.time + _castDelay;
 
-        if (Vector2.Distance(_target.position, _castPoint.position) < _castRadius)
+        if (Vector2.Distance(_target.transform.position, _castPoint.position) < _castRadius)
         {
             return true;
         }
@@ -102,6 +104,14 @@ public class DeathBringerCombat
     public void CastSpell()
     {
         _pool.Get();
+    }
+
+    private void IsTargetDead()
+    {
+        if (_target != null && _target.IsDead)
+        {
+            _target = null;
+        }
     }
 
     public void DrawGizmos()

@@ -4,6 +4,10 @@ public class DeathBringer : Character
 {
     [Header("Enemy")]
     [SerializeField] private LayerMask _enemyLayerMask;
+
+    [Header("Vision")]
+    [SerializeField] private Vision _vision;
+
     [Header("Movement")]
     [SerializeField] private DeathBringerMover _mover;
 
@@ -20,21 +24,25 @@ public class DeathBringer : Character
         base.Initialize();
         _mover.Initialize(transform, _enemyLayerMask);
         _combat.Initialize(_weapon.Damage, _enemyLayerMask);
+        _vision.SetTargetLayerMask(_enemyLayerMask);
+    }
+
+    private void OnEnable()
+    {
+        Health.OnDecreased += OnHealthDecreased;
+        _vision.FoundTarget += _combat.SetTarget;
+        _vision.FoundTarget += _mover.SetTarget;
 
         _animatorEvents.AttackFrame += _combat.AttackMelee;
         _animatorEvents.CastFrame += _combat.CastSpell;
     }
 
-    private void OnEnable()
-    {
-        HealthDecreased += _animator.TakeDamage;
-        _mover.FoundEnemy += _combat.SetTarget;
-    }
-
     private void OnDisable()
     {
-        HealthDecreased -= _animator.TakeDamage;
-        _mover.FoundEnemy -= _combat.SetTarget;
+        Health.OnDecreased -= OnHealthDecreased;
+        _vision.FoundTarget -= _combat.SetTarget;
+        _vision.FoundTarget -= _mover.SetTarget;
+
         _animatorEvents.AttackFrame -= _combat.AttackMelee;
         _animatorEvents.CastFrame -= _combat.CastSpell;
     }
@@ -50,16 +58,9 @@ public class DeathBringer : Character
             return;
         }
 
-        if (_animator.IsAttackClip() == false && _animator.IsCastClip() == false)
-        {
-            _mover.Move();
-        }
-        else
-        {
-            _mover.StopVelocityX();
-        }
+        _vision.TryFindTarget();
 
-        if(_combat.CanAttackMele())
+        if(_combat.CanAttackMelee())
         {
             _animator.AttackMele();
         }
@@ -71,9 +72,27 @@ public class DeathBringer : Character
         _animator.MoveHorizontal(_mover.MoveDirectionX);
     }
 
+    private void FixedUpdate()
+    {
+        if (_animator.IsAttackClip() == false && _animator.IsCastClip() == false)
+        {
+            _mover.Move();
+        }
+        else
+        {
+            _mover.StopVelocityX();
+        }
+    }
+
+    private void OnHealthDecreased()
+    {
+        _animator.TakeDamage();
+    }
+
     private void OnDrawGizmos()
     {
-        //_mover.DrawGizmos(transform);
+        _mover.DrawGizmos(transform);
         _combat.DrawGizmos();
+        _vision.DrawGizmos();
     }
 }

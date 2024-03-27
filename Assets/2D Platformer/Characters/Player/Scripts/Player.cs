@@ -7,6 +7,7 @@ public class Player : Character
 
     [Header("Interact with enviroment")]
     [SerializeField] private InteractSystem _interactionSystem;
+    [SerializeField] private CollisionHandler _collisionHandler;
 
     [Header("Movement")]
     [SerializeField] private PlayerMover _mover;
@@ -20,7 +21,8 @@ public class Player : Character
     [SerializeField] private PlayerAnimatorEvents _animatorEvents;
 
     private UserInput _input;
-    private float _attackTime;
+    private float _nextAttackTime;
+    private float direction;
 
     public override void Initialize()
     {
@@ -34,21 +36,21 @@ public class Player : Character
         _input.Player.Attack.performed += attackAction => StartAnimatorAttackState();
         _input.Player.Jump.performed += jumpAction => _mover.Jump();
 
-        _attackTime = 0 - _combat.AttackDelay;
+        _nextAttackTime = 0 - _combat.AttackDelay;
     }
 
     private void OnEnable()
     {
         _input.Enable();
         _animatorEvents.AttackFrame += _combat.Attack;
-        HealthDecreased += _animator.TakeDamage;
+        Health.OnDecreased += OnHealthDecreased;
     }
 
     private void OnDisable()
     {
         _input.Disable();
         _animatorEvents.AttackFrame -= _combat.Attack;
-        HealthDecreased -= _animator.TakeDamage;
+        Health.OnDecreased -= OnHealthDecreased;
     }
 
     private void Update()
@@ -58,37 +60,35 @@ public class Player : Character
             _mover.StopVelocityX();
             _animator.Death(IsDead);
             DestroyThisObject();
-
             return;
         }
 
-        float direction = _input.Player.Move.ReadValue<float>();
-
-        _mover.Move(direction, transform);
+        direction = _input.Player.Move.ReadValue<float>();
 
         _animator.MoveHorizontal(direction);
         _animator.MoveVertical(_mover.IsOnGround, _mover.VelocityY);
     }
 
+    private void FixedUpdate()
+    {
+        _mover.Move(direction, transform);
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out Coin coin))
+        if (_collisionHandler.TryHandleCoinCollision(collision, out int coinPoints))
         {
-            _bag.IncreaseCoins(coin.Collect());
+            _bag.IncreaseCoins(coinPoints);
         }
-
-        if (collision.gameObject.TryGetComponent(out Heart heart))
+        else if (HasMaxHealth == false && _collisionHandler.TryHandleHeartCollision(collision, out int heartPoints))
         {
-            if (HasMaxHealth == false)
-            {
-                Heal(heart.Collect());
-            }
+            Heal(heartPoints);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        _interactionSystem.ShowInteractKey(collision);
+        _interactionSystem.TryShowInteractKey(collision);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -98,11 +98,16 @@ public class Player : Character
 
     private void StartAnimatorAttackState()
     {
-        if (Time.time - _attackTime > _combat.AttackDelay)
+        if (_nextAttackTime < Time.time)
         {
-            _animator.AttackEnemy();
-            _attackTime = Time.time;
+            _animator.AttackMelee();
+            _nextAttackTime = Time.time + _combat.AttackDelay;
         }
+    }
+
+    private void OnHealthDecreased()
+    {
+        _animator.TakeDamage();
     }
 
     private void OnDrawGizmos()

@@ -19,13 +19,10 @@ public class DeathBringerMover
     private List<Vector2> _cachedPatrollPoints = new List<Vector2>();
     private int _patrolPointIndex = 0;
     private Transform _transform;
-    private Transform _target;
+    private Character _target;
     private LayerMask _targetLayerMask;
 
     public int MoveDirectionX { get; private set; } = 0;
-    public Transform Target => _target;
-
-    public event Action<Transform> FoundEnemy;
 
     public void Initialize(Transform transform, LayerMask enemyLayerMask)
     {
@@ -40,24 +37,26 @@ public class DeathBringerMover
 
     public void Move()
     {
+        if (_target != null && _target.IsDead)
+        {
+            _target = null;
+        }
+
         if (_target == null)
         {
             Patroling();
-            CheckPlayer();
+            Rotate(MoveDirectionX, _transform);
         }
         else
         {
             MoveToEnemy();
+            LookAt(_target.transform.position);
         }
+    }
 
-        if (_target != null)
-        {
-            LookAt(_target.position);
-
-            return;
-        }
-
-        Rotate(MoveDirectionX, _transform);
+    public void SetTarget(Character target)
+    {
+        _target = target;
     }
 
     public void StopVelocityX()
@@ -78,26 +77,11 @@ public class DeathBringerMover
         }
     }
 
-    private bool CheckPlayer()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(_visabilityRayPoint.position, _visabilityRayPoint.right, _visionDistance, _targetLayerMask);
-
-        if (hit && hit.collider.TryGetComponent(out Player player))
-        {
-            _target = player.transform;
-            FoundEnemy.Invoke(_target);
-
-            return true;
-        }
-
-        return false;
-    }
-
     private void MoveToEnemy()
     {
-        if (Vector2.Distance(_transform.position, _target.position) > _maxDistanceToEnemy)
+        if (Vector2.Distance(_transform.position, _target.transform.position) > _maxDistanceToEnemy)
         {
-            TryMoveHorizontalToTarget(_target.position.x);
+            TryMoveHorizontalToTarget(_target.transform.position.x);
         }
         else
         {
@@ -159,7 +143,5 @@ public class DeathBringerMover
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(new Vector2(transform.position.x, _visabilityRayPoint.position.y), _maxDistanceToEnemy);
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(_visabilityRayPoint.position + new Vector3(0, 0.02f, 0), _visabilityRayPoint.right * _visionDistance);
     }
 }

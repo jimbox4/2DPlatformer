@@ -10,6 +10,8 @@ public class Health
     public int CurrentValue => _currentValue;
     public bool IsMaxValue => _currentValue == _maxValue;
 
+    public event Action OnDecreased;
+
     public bool TryIncrease(int value)
     {
         if (value < 0)
@@ -30,6 +32,8 @@ public class Health
         }
 
         _currentValue = Mathf.Clamp(_currentValue - value, 0, _maxValue);
+
+        OnDecreased.Invoke();
 
         return true;
     }
