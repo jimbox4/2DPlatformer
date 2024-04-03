@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -11,6 +10,7 @@ public abstract class Character : MonoBehaviour
 
     protected string Name;
 
+    public Health GetHealth => Health;
     public bool IsDead => Health.CurrentValue == 0;
     protected bool HasMaxHealth => Health.IsMaxValue;
 

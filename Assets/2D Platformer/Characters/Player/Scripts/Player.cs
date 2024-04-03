@@ -26,7 +26,7 @@ public class Player : Character
     public override void Initialize()
     {
         base.Initialize();
-        _mover.Initialize();
+        _mover.Initialize(GetComponent<Rigidbody2D>());
         _interactionSystem.Initialize(gameObject.transform);
 
         _input = new UserInput();

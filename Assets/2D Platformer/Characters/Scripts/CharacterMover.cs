@@ -8,7 +8,7 @@ public abstract class CharacterMover
 
     private Rigidbody2D _rigidbody2D;
     
-    protected void Initialize(Rigidbody2D rigidbody2D)
+    public virtual void Initialize(Rigidbody2D rigidbody2D)
     {
         _rigidbody2D = rigidbody2D;
     }
