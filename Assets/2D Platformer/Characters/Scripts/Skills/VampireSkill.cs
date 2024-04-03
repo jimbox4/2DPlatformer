@@ -19,14 +19,27 @@ public class VampireSkill
 
     private bool _enabled = false;
     private Character _character;
+    
+    public bool CanActivate => _enabled == false;
 
     public void Initialize(Character character)
     {
         _character = character;
         _bar.Initialize(_duration);
+        Start();
     }
 
-    public bool CanActivate => _enabled == false;
+    public void Start()
+    {
+        _particleSystem.gameObject.SetActive(true);
+        _bar.enabled = true;
+    }
+
+    public void Stop()
+    {
+        _particleSystem.gameObject.SetActive(false);
+        _bar.enabled = false;
+    }
 
     public IEnumerator Vampirize()
     {
@@ -37,7 +50,7 @@ public class VampireSkill
 
         while (Time.time <= endTime)
         {
-            VampirizeHealth();
+            TakeHealth();
             _bar.UpdateValue(endTime - Time.time);
 
             yield return wait;
@@ -62,7 +75,7 @@ public class VampireSkill
         _enabled = false;
     }
 
-    private void VampirizeHealth()
+    private void TakeHealth()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_center.position, _radius, _layerMask);
 
@@ -73,18 +86,12 @@ public class VampireSkill
 
         foreach (Collider2D collider in colliders)
         {
-            if (collider.TryGetComponent(out Character character) && character.IsDead == false)
+            if (collider.TryGetComponent(out Character enemy) && enemy.IsDead == false)
             {
-                character.TakeDamage(_healthPerTick);
+                enemy.TakeDamage(_healthPerTick);
                 _character.Heal(_healthPerTick);
             }
         }
-    }
-
-    public void Stop()
-    {
-        _particleSystem.Stop();
-        _bar.enabled = false;
     }
 
     public void DrawGizmos()
