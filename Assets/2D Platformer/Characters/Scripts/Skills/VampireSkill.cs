@@ -53,7 +53,6 @@ public class VampireSkill
 
         while (Time.time <= endTime)
         {
-            VampirizeHealth();
             _bar.UpdateValue(_replenishTime - (endTime - Time.time));
 
             yield return null;
@@ -65,13 +64,10 @@ public class VampireSkill
 
     private void VampirizeHealth()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(_center.position, _radius, _layerMask);
+        Collider2D collider = Physics2D.OverlapCircle(_center.position, _radius, _layerMask);
 
-        foreach (Collider2D collider in colliders)
-        {
-            collider.GetComponent<Character>().TakeDamage(_healthPerTick);
-            _character.Heal(_healthPerTick);
-        }
+        collider?.GetComponent<Character>().TakeDamage(_healthPerTick);
+        _character.Heal(_healthPerTick);
     }
 
     public void DrawGizmos()
