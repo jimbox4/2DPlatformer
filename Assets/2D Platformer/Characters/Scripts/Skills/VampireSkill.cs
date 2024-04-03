@@ -73,8 +73,11 @@ public class VampireSkill
 
         foreach (Collider2D collider in colliders)
         {
-            collider?.GetComponent<Character>().TakeDamage(_healthPerTick);
-            _character.Heal(_healthPerTick);
+            if (collider.TryGetComponent(out Character character) && character.IsDead == false)
+            {
+                character.TakeDamage(_healthPerTick);
+                _character.Heal(_healthPerTick);
+            }
         }
     }
 
