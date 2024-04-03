@@ -4,7 +4,7 @@ public class Bootstrap : MonoBehaviour
 {
     [SerializeField] private Player _player;
     [SerializeField] private DeathBringer _deathBringer;
-    [SerializeField] private Bar[] _Bars;
+    [SerializeField] private HealthBar[] _Bars;
 
     private void Awake()
     {

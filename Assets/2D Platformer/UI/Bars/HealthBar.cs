@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class Bar : MonoBehaviour
+public abstract class HealthBar : MonoBehaviour
 {
     [SerializeField] private Character _character;
 

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Player : Character
@@ -15,6 +16,9 @@ public class Player : Character
     [SerializeField] private PlayerCombat _combat;
     [SerializeField] private Weapon _weapon;
 
+    [Header("Skills")]
+    [SerializeField] private VampireSkill _vampireSkill;
+
     [Header("Animation")]
     [SerializeField] private PlayerAnimator _animator;
     [SerializeField] private PlayerAnimatorEvents _animatorEvents;
@@ -28,12 +32,14 @@ public class Player : Character
         base.Initialize();
         _mover.Initialize(GetComponent<Rigidbody2D>());
         _interactionSystem.Initialize(gameObject.transform);
+        _vampireSkill.Initialize(this);
 
         _input = new UserInput();
 
         _input.Player.Interact.performed += interactingAction => _interactionSystem.Interact();
         _input.Player.Attack.performed += attackAction => StartAnimatorAttackState();
         _input.Player.Jump.performed += jumpAction => _mover.Jump();
+        _input.Player.VampirizmSkill.performed += vampireSkillAction => UseVampirizeSkill();
 
         _nextAttackTime = 0 - _combat.AttackDelay;
     }
@@ -42,6 +48,7 @@ public class Player : Character
     {
         _input.Enable();
         _animatorEvents.AttackFrame += _combat.Attack;
+        _vampireSkill.OnSkillEnded += ReplenishVampirizmSkill;
         Health.OnDecreased += OnHealthDecreased;
     }
 
@@ -49,6 +56,7 @@ public class Player : Character
     {
         _input.Disable();
         _animatorEvents.AttackFrame -= _combat.Attack;
+        _vampireSkill.OnSkillEnded -= ReplenishVampirizmSkill;
         Health.OnDecreased -= OnHealthDecreased;
     }
 
@@ -104,6 +112,19 @@ public class Player : Character
         }
     }
 
+    private void UseVampirizeSkill()
+    {
+        if (_vampireSkill.CanActivate)
+        {
+            StartCoroutine(_vampireSkill.Vampirize());
+        }
+    }
+
+    private void ReplenishVampirizmSkill()
+    {
+        StartCoroutine(_vampireSkill.ReplenishAbility());
+    }
+
     private void OnHealthDecreased()
     {
         _animator.TakeDamage();
@@ -113,5 +134,6 @@ public class Player : Character
     {
         _mover.DrawGizmos();
         _combat.DrawGizmos();
+        _vampireSkill.DrawGizmos();
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SliderBar : Bar
+public class HealthSliderBar : HealthBar
 {
     [SerializeField] private Image[] _images;
 

@@ -10,16 +10,14 @@ public class PlayerMover : CharacterMover
     [SerializeField] private Transform _groundCheckPoint;
     [SerializeField] private Vector2 _groundCheckPointSize;
 
-    private Rigidbody2D _rigidbody2D;
     private int _jumpForceScale = 50;
 
     public bool IsOnGround { get; private set; }
 
-    public float VelocityY => _rigidbody2D.velocity.y;
+    public float VelocityY => Rigidbody2D.velocity.y;
 
     public override void Initialize(Rigidbody2D rigidbody2D)
     {
-        _rigidbody2D = rigidbody2D;
         base.Initialize(rigidbody2D);
     }
 
@@ -38,7 +36,7 @@ public class PlayerMover : CharacterMover
             return;
         }
 
-        _rigidbody2D.AddForce(Vector2.up * _jumpForce * _jumpForceScale);
+        Rigidbody2D.AddForce(Vector2.up * _jumpForce * _jumpForceScale);
     }
 
     public bool CheckGround()

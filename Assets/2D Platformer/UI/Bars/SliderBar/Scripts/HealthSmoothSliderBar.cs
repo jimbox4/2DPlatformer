@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SmoothSliderBar : Bar
+public class HealthSmoothSliderBar : HealthBar
 {
     [SerializeField] private Image[] _images;
     [SerializeField, Range(0,2)] private float _speed;

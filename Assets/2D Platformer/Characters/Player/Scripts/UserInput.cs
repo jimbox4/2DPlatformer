@@ -220,7 +220,7 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""8a30d5b4-520d-430a-964f-ace902997c80"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""DualSence"",
