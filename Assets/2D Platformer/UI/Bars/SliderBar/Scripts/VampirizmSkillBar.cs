@@ -9,6 +9,11 @@ public class VampirizmSkillBar : MonoBehaviour
 
     private float _maxValue;
 
+    private void OnDisable()
+    {
+        _image.enabled = false;
+    }
+
     public void Initialize(float maxValue)
     {
         _maxValue = maxValue;

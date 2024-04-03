@@ -64,6 +64,7 @@ public class Player : Character
     {
         if (IsDead)
         {
+            _vampireSkill.Stop();
             _mover.ResetVelocityX();
             _animator.Death(IsDead);
             DestroyThisObject();

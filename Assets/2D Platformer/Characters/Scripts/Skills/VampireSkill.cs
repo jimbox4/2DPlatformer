@@ -78,6 +78,12 @@ public class VampireSkill
         }
     }
 
+    public void Stop()
+    {
+        _particleSystem.Stop();
+        _bar.enabled = false;
+    }
+
     public void DrawGizmos()
     {
         Gizmos.color = Color.magenta;
