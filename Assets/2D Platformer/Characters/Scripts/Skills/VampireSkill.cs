@@ -64,10 +64,18 @@ public class VampireSkill
 
     private void VampirizeHealth()
     {
-        Collider2D collider = Physics2D.OverlapCircle(_center.position, _radius, _layerMask);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_center.position, _radius, _layerMask);
 
-        collider?.GetComponent<Character>().TakeDamage(_healthPerTick);
-        _character.Heal(_healthPerTick);
+        if (colliders == null)
+        {
+            return;
+        }
+
+        foreach (Collider2D collider in colliders)
+        {
+            collider?.GetComponent<Character>().TakeDamage(_healthPerTick);
+            _character.Heal(_healthPerTick);
+        }
     }
 
     public void DrawGizmos()
