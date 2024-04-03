@@ -2,24 +2,24 @@ using UnityEngine;
 
 public abstract class Bar : MonoBehaviour
 {
-    [SerializeField] private Character Character;
+    [SerializeField] private Character _character;
 
-    protected Health Health => Character.GetHealth;
+    protected Health Health => _character.GetHealth;
 
     public abstract void Initialize();
 
     private void OnEnable()
     {
-        Character.GetHealth.OnDecreased += UpdateCurrentValue;
-        Character.GetHealth.OnIncreased += UpdateCurrentValue;
-        Character.GetHealth.OnMaxValueChanged += UpdateMaxValue;
+        _character.GetHealth.OnDecreased += UpdateCurrentValue;
+        _character.GetHealth.OnIncreased += UpdateCurrentValue;
+        _character.GetHealth.OnMaxValueChanged += UpdateMaxValue;
     }
 
     private void OnDisable()
     {
-        Character.GetHealth.OnDecreased -= UpdateCurrentValue;
-        Character.GetHealth.OnIncreased -= UpdateCurrentValue;
-        Character.GetHealth.OnMaxValueChanged -= UpdateMaxValue;
+        _character.GetHealth.OnDecreased -= UpdateCurrentValue;
+        _character.GetHealth.OnIncreased -= UpdateCurrentValue;
+        _character.GetHealth.OnMaxValueChanged -= UpdateMaxValue;
     }
 
     protected abstract void UpdateMaxValue();

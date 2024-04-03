@@ -956,7 +956,7 @@ MonoBehaviour:
   _deathBringer: {fileID: 90465487}
   _Bars:
   - {fileID: 409149488}
-  - {fileID: 0}
+  - {fileID: 1509636057}
 --- !u!4 &233869369
 Transform:
   m_ObjectHideFlags: 0

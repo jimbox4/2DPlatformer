@@ -33,7 +33,7 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
                     ""id"": ""2dfecae6-e816-4f81-ace7-b52b3708d65a"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": true
                 },
                 {
@@ -42,7 +42,7 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
                     ""id"": ""7241262a-aba3-42c2-874e-cce5dc3f0a88"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -51,7 +51,7 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
                     ""id"": ""ac00c988-f4db-4067-a5db-b045cafde56e"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -60,22 +60,20 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
                     ""id"": ""9540c431-ce7c-4947-b8d8-3c8d6a95bb71"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""VampirizmSkill"",
+                    ""type"": ""Button"",
+                    ""id"": ""3a9eb7b9-63cf-4a43-b0a1-28f049bda204"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": ""One Modifier"",
-                    ""id"": ""0a3bd50f-cdab-4ce2-98f7-395d2b2c7ea1"",
-                    ""path"": ""OneModifier"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": ""1D Axis"",
                     ""id"": ""621336d5-07ea-4b9d-94b7-e1381fd00773"",
@@ -240,6 +238,28 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4f81c70c-9513-474b-a676-f9e511b2af19"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""VampirizmSkill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8bbc84f8-9986-424f-b741-a0f0e2545b7a"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""DualSence"",
+                    ""action"": ""VampirizmSkill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -280,6 +300,7 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_VampirizmSkill = m_Player.FindAction("VampirizmSkill", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -345,6 +366,7 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_VampirizmSkill;
     public struct PlayerActions
     {
         private @UserInput m_Wrapper;
@@ -353,6 +375,7 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
         public InputAction @Attack => m_Wrapper.m_Player_Attack;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @VampirizmSkill => m_Wrapper.m_Player_VampirizmSkill;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -374,6 +397,9 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @VampirizmSkill.started += instance.OnVampirizmSkill;
+            @VampirizmSkill.performed += instance.OnVampirizmSkill;
+            @VampirizmSkill.canceled += instance.OnVampirizmSkill;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -390,6 +416,9 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @VampirizmSkill.started -= instance.OnVampirizmSkill;
+            @VampirizmSkill.performed -= instance.OnVampirizmSkill;
+            @VampirizmSkill.canceled -= instance.OnVampirizmSkill;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -431,5 +460,6 @@ public partial class @UserInput: IInputActionCollection2, IDisposable
         void OnAttack(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnVampirizmSkill(InputAction.CallbackContext context);
     }
 }
